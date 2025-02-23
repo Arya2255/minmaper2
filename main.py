@@ -12,17 +12,22 @@ def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     def on_resize(e):
         # look a like page.update() dosent work,soo...
+        #this is for fixing the search container width
+        parent = 0
+        child = 0
         if len(page.overlay) > 0:
             for i in page.overlay:
-                print(i)
-                if isinstance(i, ft.Column):
-                    print('این یک ستون است')
+                if isinstance(i, ft.Stack) and i.controls:
+                    for control in i.controls:
+                        if isinstance(control, ft.Column):
+                            page.overlay[0].controls[0].width = page.width
+                            page.update(page.overlay[0].controls[0])
+                            child+=1
+                parent+=1
+        #--------------------------------------------------------------------
 
-            print(page.overlay[0].controls[0].width)
-            page.overlay[0].controls[0].width = page.width
 
-            page.update(page.overlay[0].controls[0])
-            print(page.overlay[0].controls[0])
+
         page.update()
     page.on_resized = on_resize
 
@@ -188,9 +193,12 @@ def main(page: ft.Page):
 
     # search ------------------------------------------------------------------------------------------------------------------------
     def close_anchor(e):
-        text = f"Color {e.control.data}"
-        print(f"closing view from {text}")
-        search_container.close_view(text)
+        if e.control.data:
+            text = f"Color {e.control.data}"
+            print(f"closing view from {text}")
+            search_container.close_view(text)
+        else:
+            search_container.close_view()
 
     def handle_change(e):
         print(f"handle_change e.data: {e.data}")
@@ -199,25 +207,72 @@ def main(page: ft.Page):
         print(f"handle_submit e.data: {e.data}")
 
     def handle_tap(e):
-        print(f"handle_tap")
         search_container.open_view()
     
     def close_search(e):
         page.overlay.remove(search_container_holder)
         page.update()
+
+    def amenity_selected(e):
+        page.update()
+    def open_filter(e):
+        search_container_holder.controls[0].controls.append(
+            ft.Row(
+                controls=[
+                    ft.Chip(
+                        label=ft.Text('Search By Title'),
+                        # bgcolor=ft.Colors.GREEN_200,
+                        disabled_color=ft.Colors.GREEN_100,
+                        autofocus=True,
+                        on_select=amenity_selected,
+                    ),
+                    ft.Chip(
+                        label=ft.Text('Search By Contents'),
+                        # bgcolor=ft.Colors.GREEN_200,
+                        disabled_color=ft.Colors.GREEN_100,
+                        autofocus=True,
+                        on_select=amenity_selected,
+                    ),
+                    ft.Chip(
+                        label=ft.Text('Search By Contents Files'),
+                        # bgcolor=ft.Colors.GREEN_200,
+                        disabled_color=ft.Colors.GREEN_100,
+                        autofocus=True,
+                        on_select=amenity_selected,
+                    )
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+            )
+            
+        )
+        search_container.view_trailing = [ft.IconButton(icon=ft.Icons.FILTER_ALT, on_click=open_filter)]
+        search_container.view_trailing[0].on_click = close_filter
+        close_anchor(e)
+        page.update()
+
+    def close_filter(e):
+        search_container.view_trailing = [ft.IconButton(icon=ft.Icons.FILTER_ALT_OFF_OUTLINED, on_click=open_filter)]
+        search_container.view_trailing[0].on_click = open_filter
+        close_anchor(e)
+        print(search_container_holder.controls[0].controls)
+        search_container_holder.controls[0].controls.remove(search_container_holder.controls[0].controls[2])
+
+        page.update()
+
     search_container = ft.SearchBar(
-        view_elevation=4,
+        # view_elevation=2,
         divider_color=ft.Colors.AMBER,
         bar_hint_text="Search nodes...",
-        view_hint_text="for better results change the filter",
+        view_hint_text="for better results change the filter -->",
         bar_leading = ft.IconButton(icon=ft.Icons.CLOSE, on_click=close_search),
         on_change=handle_change,
         on_submit=handle_submit,
         on_tap=handle_tap,
-        view_trailing = [ft.IconButton(icon=ft.Icons.FILTER_LIST)],
+        view_trailing = [ft.IconButton(icon=ft.Icons.FILTER_ALT_OFF_OUTLINED, on_click=open_filter)],
         controls=[
-            ft.ListTile(title=ft.Text(f"Color {i}"), on_click=close_anchor, data=i)
-            for i in range(10)
+            ft.ListTile(
+            
+            )
         ],
         width=page.width,
     )
@@ -229,17 +284,39 @@ def main(page: ft.Page):
                     ft.Text("\n"),
                     ft.Container(
                         width=page.width,
-                        bgcolor=ft.Colors.RED,
-                        border_radius=10,
                         content=search_container,
                         alignment=ft.alignment.center,
+                        padding=10,
                         
                     ),
+
+
                     
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             ),
+        
+            ft.Container(
+                content=ft.FloatingActionButton(
+                icon=ft.Icons.ARROW_FORWARD,
+                bgcolor=ft.Colors.BLUE,
+                shape=ft.CircleBorder(),
+                on_click=lambda e: print("FAB 1 کلیک شد")
+            ),
+            right=20, bottom=20),
+            ft.Container(
+                content=ft.FloatingActionButton(
+                icon=ft.Icons.ARROW_BACK,
+                bgcolor=ft.Colors.BLUE,
+                shape=ft.CircleBorder(),
+                on_click=lambda e: print("FAB 2 کلیک شد"),
+            ),
+            left=20, bottom=20)
+            
+            
         ],
+        width=page.width,
+        height=page.height,
         )
      
     # ----------------------------------------------------------------------------------------------------------------------------------------
