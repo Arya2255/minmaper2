@@ -254,7 +254,6 @@ def main(page: ft.Page):
         search_container.view_trailing = [ft.IconButton(icon=ft.Icons.FILTER_ALT_OFF_OUTLINED, on_click=open_filter)]
         search_container.view_trailing[0].on_click = open_filter
         close_anchor(e)
-        print(search_container_holder.controls[0].controls)
         search_container_holder.controls[0].controls.remove(search_container_holder.controls[0].controls[2])
 
         page.update()
