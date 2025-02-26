@@ -369,6 +369,16 @@ def main(page: ft.Page):
         page.open(menu)
         page.update()
 
+    sample_of_job = ft.ListTile(
+        title=ft.Text("Item 1",text_align=ft.TextAlign.CENTER),
+        bgcolor=ft.Colors.with_opacity(0.4,ft.Colors.BLUE_100),
+        )
+    sample_of_job2=ft.Container(
+        bgcolor=ft.Colors.with_opacity(0.4,ft.Colors.BLUE_100),
+        content=sample_of_job,
+        border_radius=50,
+        )
+
 
     menu = ft.NavigationDrawer(
         position=ft.NavigationDrawerPosition.END,
@@ -380,6 +390,7 @@ def main(page: ft.Page):
                 ],
                 alignment=ft.MainAxisAlignment.START,
             ),
+            ft.Text("Swap to right to delete\nAnd swap to left to Share",text_align=ft.TextAlign.CENTER),
             ft.ListView(
                 expand=1,
                 spacing=10,
@@ -387,17 +398,13 @@ def main(page: ft.Page):
                 auto_scroll=True,
                 controls=[
                     ft.Dismissible(
-                        content=ft.ListTile(title=ft.Text("Item 1")),
+                        content=sample_of_job2,
                         dismiss_direction=ft.DismissDirection.HORIZONTAL,
-                        background=ft.Container(bgcolor=ft.Colors.GREEN),
-                        secondary_background=ft.Container(bgcolor=ft.Colors.RED),
+                        background=ft.Container(content=ft.Row(controls=[ft.Icon(ft.Icons.DELETE),ft.Text("Delete")],alignment=ft.MainAxisAlignment.START),bgcolor=ft.Colors.with_opacity(0.4,ft.Colors.RED),border_radius=50,padding=10),
+                        secondary_background=ft.Container(content=ft.Row(controls=[ft.Icon(ft.Icons.SHARE),ft.Text("Share")],alignment=ft.MainAxisAlignment.END),bgcolor=ft.Colors.with_opacity(0.4,ft.Colors.GREEN),border_radius=50,padding=10),
                         # on_dismiss=handle_dismiss,
                         # on_update=handle_update,
                         # on_confirm_dismiss=handle_confirm_dismiss,
-                        dismiss_thresholds={
-                            ft.DismissDirection.END_TO_START: 0.2,
-                            ft.DismissDirection.START_TO_END: 0.2,
-                    },
                 )
                 
                 ],
