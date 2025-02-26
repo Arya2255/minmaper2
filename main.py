@@ -1,15 +1,21 @@
 import flet as ft
 
+
+
+# global variables ------------------------------------------------------------------------------------------------------------------------
 # لیست گره‌ها
 nodes_graph = []
 
+# ------------------------------------------------------------------------------------------------------------------------
+
 def main(page: ft.Page):
-    # تنظیمات صفحه
+    # page settings ------------------------------------------------------------------------------------------------------------------------
     page.title = "Do Visualization"
     page.padding = 0
     page.adaptive = True
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.update()
     def on_resize(e):
         # look a like page.update() dosent work,soo...
         #this is for fixing the search container width
@@ -30,6 +36,10 @@ def main(page: ft.Page):
 
         page.update()
     page.on_resized = on_resize
+
+
+
+
 
 
 
@@ -254,7 +264,7 @@ def main(page: ft.Page):
         search_container.view_trailing = [ft.IconButton(icon=ft.Icons.FILTER_ALT_OFF_OUTLINED, on_click=open_filter)]
         search_container.view_trailing[0].on_click = open_filter
         close_anchor(e)
-        search_container_holder.controls[0].controls.remove(search_container_holder.controls[0].controls[2])
+        search_container_holder.controls[0].controls.remove(search_container_holder.controls[0].controls[1])
 
         page.update()
 
@@ -280,7 +290,6 @@ def main(page: ft.Page):
         controls=[
             ft.Column(
                 controls=[
-                    ft.Text("\n"),
                     ft.Container(
                         width=page.width,
                         content=search_container,
@@ -352,7 +361,73 @@ def main(page: ft.Page):
     # ----------------------------------------------------------------------------------------------------------------------------------------
 
 
+    # menu ------------------------------------------------------------------------------------------------------------------------
+    def close_menu(e):
+        page.close(menu)
+        page.update()
+    def open_menu(e):
+        page.open(menu)
+        page.update()
 
+
+    menu = ft.NavigationDrawer(
+        position=ft.NavigationDrawerPosition.END,
+        bgcolor=ft.Colors.with_opacity(0.4,ft.Colors.BLUE_100),
+        controls=[
+            ft.Row(
+                controls=[
+                    ft.IconButton(icon=ft.Icons.CLOSE, on_click=close_menu),
+                ],
+                alignment=ft.MainAxisAlignment.START,
+            ),
+            ft.ListView(
+                expand=1,
+                spacing=10,
+                padding=20,
+                auto_scroll=True,
+                controls=[
+                    ft.Dismissible(
+                        content=ft.ListTile(title=ft.Text("Item 1")),
+                        dismiss_direction=ft.DismissDirection.HORIZONTAL,
+                        background=ft.Container(bgcolor=ft.Colors.GREEN),
+                        secondary_background=ft.Container(bgcolor=ft.Colors.RED),
+                        # on_dismiss=handle_dismiss,
+                        # on_update=handle_update,
+                        # on_confirm_dismiss=handle_confirm_dismiss,
+                        dismiss_thresholds={
+                            ft.DismissDirection.END_TO_START: 0.2,
+                            ft.DismissDirection.START_TO_END: 0.2,
+                    },
+                )
+                
+                ],
+            ),
+            ft.Row(
+                controls=[
+                    ft.FilledTonalButton("Add Job", icon="add"),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+            ),
+            ]
+    )
+    # ----------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+    # app bar ------------------------------------------------------------------------------------------------------------------------
+    app_bar = ft.AppBar(
+        title=ft.Text("Do Visualization"),
+        center_title=True,
+        force_material_transparency=True,
+        # title_text_style=ft.TextStyle(weight=ft.FontWeight.BOLD),
+        actions=[
+            ft.IconButton(ft.Icons.MENU, on_click=open_menu),
+        ]
+
+    )
+    page.add(app_bar)
+    # ----------------------------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -373,6 +448,7 @@ def main(page: ft.Page):
     def remove_node(e):
         page.update()
     def edit_node(e):
+        page.theme_mode = ft.ThemeMode.DARK
         page.update()
     def search_node(e):
         page.overlay.append(search_container_holder)
@@ -387,7 +463,7 @@ def main(page: ft.Page):
             ],
             alignment=ft.MainAxisAlignment.SPACE_AROUND,
         ),
-        bgcolor=ft.Colors.BLUE_100,
+        bgcolor=ft.Colors.BLUE_300,
         shape=ft.NotchShape.CIRCULAR,
     )
     page.add(bottom_app_bar,chat_button)
